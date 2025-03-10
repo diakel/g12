@@ -1,0 +1,10 @@
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    color: black;
+  }
+  
+.container {
+    width: 800px;
+    margin: 0 auto;
+}
