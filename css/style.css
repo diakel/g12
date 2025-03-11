@@ -5,6 +5,15 @@ body {
   }
   
 .container {
-    width: 800px;
+    width: 1000px;
     margin: 0 auto;
+}
+
+.geo-path {
+  fill: #383838;
+}
+.geo-boundary-path {
+  stroke: #fff;
+  fill: none;
+  stroke-width: 1;
 }
