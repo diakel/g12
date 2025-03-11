@@ -10,6 +10,7 @@
     <!-- Add HTML content, SVG drawing area, ... -->
     <div class="container">
         <h1>Book bans in the United States</h1>
+        <div id="map"></div>
         <div id="vis-sunburst">
             <input id="districtChoice" type="text" placeholder="Riverside Community School District"/>
             <button id="filterByDistrict" onClick="filterByDistrict()">Select District</button>
@@ -20,6 +21,7 @@
     <script src="js/d3.v6.min.js"></script>
 
     <!-- Our JS code -->
+    <script src="js/states_map.js"></script>
     <script src="js/sunburst.js"></script>
     <script src="js/main.js"></script>
 </body>
