@@ -10,8 +10,11 @@
     <!-- Add HTML content, SVG drawing area, ... -->
     <div class="container">
         <h1>Book bans in the United States</h1>
-        <div style="width:350px;float:left;margin:10px" id="vis-sunburst"></div>
-        <div id="mercator"></div>
+        <div style="width:350px;float:left;margin:10px id="vis-sunburst">
+            <input id="districtChoice" type="text" placeholder="Riverside Community School District"/>
+            <button id="filterByDistrict" onClick="filterByDistrict()">Select District</button>
+        </div>
+        <div id="mercator"></div>                                                              
     </div>
     
     <!-- D3 bundle -->
