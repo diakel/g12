@@ -10,16 +10,31 @@
     <!-- Add HTML content, SVG drawing area, ... -->
     <div class="container">
         <h1>Book bans in the United States</h1>
+<<<<<<< Updated upstream
         <div style="width:350px;float:left;margin:10px" id="vis-sunburst"></div>
         <div id="mercator"></div>
+=======
+        
+        <div style="display:flex;flex-direction:row">
+        <div id="vis-sunburst" style="width:350px;float:left;margin:10px">
+            <input id="districtChoice" type="text" placeholder="Riverside Community School District"/>
+            <button id="filterByDistrict" onClick="filterByDistrict()">Select District</button>
+        </div>
+        <div id="mercator" style="width:550px;text-align:center">
+            <input class="slidecontainer" type="range" min="1" max="100" value="50" class="slider" id="myRange"/>
+        </div>
+        </div>                                                           
+>>>>>>> Stashed changes
     </div>
+
+    <div id="tooltip"></div>
     
     <!-- D3 bundle -->
     <script src="js/d3.v6.min.js"></script>
 
     <!-- Our JS code -->
     <script src="js/topojson.v3.js"></script>
-    <script src="js/geoMap.js"></script>
+    <script src="js/choroplethMap.js"></script>
     <script src="js/sunburst.js"></script>
     <script src="js/main.js"></script>
 </body>
