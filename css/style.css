@@ -12,13 +12,6 @@ body {
 .slidecontainer {
   width: 80%;
 }
-<<<<<<< Updated upstream
-.geo-boundary-path {
-  stroke: #fff;
-  fill: none;
-  stroke-width: 1;
-}
-=======
 
 /* The slider itself */
 .slider {
@@ -77,4 +70,3 @@ body {
     min-width: 160px;
     color: #333;
   }
->>>>>>> Stashed changes
