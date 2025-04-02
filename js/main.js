@@ -19,10 +19,5 @@ d3.json('data/us-states.json')
       parentElement: '#mercator',
       projection: d3.geoMercator()
     }, data);
-
-    // Lambert conformal conic projection
-    // See: https://observablehq.com/@bryik/statscans-most-common-map-projection
-    // We need to rotate the globe. You can often find specifications for popular projections
-    // and world regions somewhere on the internet or you tweak the parameters to get a satisfying result.
   })
   .catch(error => console.error(error));
