@@ -1,11 +1,20 @@
 const parseMonthYear = d3.timeParse('%b.%y');
 let selectedState, selectedArc = "";
 let selectedBook = null;
-let statesToHighlight = [];
+let statesToHighlight = []; // this variable stores states in which the selected book was banned
+let stateCounts = null; // this variable stores states with their respective number of banned books
 let sunburst, dataBooks;
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
+  const dataBooksHierarchy = d3.hierarchy(dataBooks);
+
+  stateCounts = d3.rollups(
+    dataBooksHierarchy.leaves(),           
+    v => v.length,
+    d => d.parent.parent.parent.data.name
+  ).map(([state, count]) => ({ state, count }));
+
   sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
 }); 
 
