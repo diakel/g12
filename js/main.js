@@ -83,3 +83,54 @@ d3.json('data/us-states.json')
     }, data);
   })
   .catch(error => console.error(error));
+
+
+// dealing with the month picker, range from July 2021 to June 2024
+const selectMonth = document.getElementById("month");
+const selectYear = document.getElementById("year");
+const months = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+// Range july 2021 to june 2024, note 0 based months
+const startYear = 2021;
+const startMonth = 6;
+const endYear = 2024;
+const endMonth = 5;
+
+function setYears() {
+  for (let year = startYear; year <= endYear; year++) {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    selectYear.appendChild(option);
+  }
+}
+
+function setMonths(selectedYear) {
+  // Clear options
+  selectMonth.innerHTML = "";
+
+  let start = 0;
+  let end = 11;
+
+  // cond for start and end months based on years
+  if (selectedYear == startYear) start = startMonth;
+  if (selectedYear == endYear) end = endMonth;
+
+  for (let i = start; i <= end; i++) {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = months[i];
+    selectMonth.appendChild(option);
+  }
+}
+
+setYears();
+selectYear.value = startYear;
+setMonths(startYear);
+// Update months when year changes
+selectYear.addEventListener("change", () => {
+  setMonths(parseInt(selectYear.value));
+});

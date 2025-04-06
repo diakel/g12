@@ -8,8 +8,8 @@ class ChoroplethMap {
   constructor(_config, _data) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 550,
-      containerHeight: _config.containerHeight || 350,
+      containerWidth: _config.containerWidth || 850,
+      containerHeight: _config.containerHeight || 550,
       margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
       projection: _config.projection || d3.geoAlbersUsa(),  // Use Albers USA projection
       tooltipPadding: 10

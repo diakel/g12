@@ -14,93 +14,21 @@
         <div id="vis-sunburst" style="float:left;margin:20px">
         </div>
         <div id="mercator" style="width:550px;text-align:center">
-            <input class="slidecontainer" type="range" min="0" max="35" value="50" class="slider" id="myRange" list="markersLimited"/>
-
-            <!--  
-            <datalist id="markers">
-                <option value="0" label = "July 2021"></option>
-                <option value="1" label = "August 2021"></option>
-                <option value="2" label = "September 2021"></option>
-                <option value="3" label = "October 2021"></option>
-                <option value="4" label = "November 2021"></option>
-                <option value="5" label = "December 2021"></option>
-
-                <option value="6" label = "January 2022"></option>
-                <option value="7" label = "February 2022"></option>
-                <option value="8" label = "March 2022"></option>
-                <option value="9" label = "April 2022"></option>
-                <option value="10" label = "May 2022"></option>
-                <option value="11" label = "June 2022"></option>
-                <option value="12" label = "July 2022"></option>
-                <option value="13" label = "August 2022"></option>
-                <option value="14" label = "September 2022"></option>
-                <option value="15" label = "October 2022"></option>
-                <option value="16" label = "November 2022"></option>
-                <option value="17" label = "December 2022"></option>
-
-                <option value="18" label = "January 2023"></option>
-                <option value="19" label = "February 2023"></option>
-                <option value="20" label = "March 2023"></option>
-                <option value="21" label = "April 2023"></option>
-                <option value="22" label = "May 2023"></option>
-                <option value="23" label = "June 2023"></option>
-                <option value="24" label = "July 2023"></option>
-                <option value="25" label = "August 2023"></option>
-                <option value="26" label = "September 2023"></option>
-                <option value="27" label = "October 2023"></option>
-                <option value="28" label = "November 2023"></option>
-                <option value="29" label = "December 2023"></option>
-
-                <option value="30" label = "January 2024"></option>
-                <option value="31" label = "February 2024"></option>
-                <option value="32" label = "March 2024"></option>
-                <option value="33" label = "April 2024"></option>
-                <option value="34" label = "May 2024"></option>
-                <option value="35" label = "June 2024"></option>
-            </datalist>
-            -->
-
-            <datalist id="markersLimited">
-                <option value="0" label = "July 2021"></option>
-                <option value="1" label = "August"></option>
-                <option value="2" label = "September"></option>
-                <option value="3" label = "October"></option>
-                <option value="4" label = "November"></option>
-                <option value="5" label = "December"></option>
-
-                <option value="6" label = "January 2022"></option>
-                <option value="7" label = "February"></option>
-                <option value="8" label = "March"></option>
-                <option value="9" label = "April"></option>
-                <option value="10" label = "May"></option>
-                <option value="11" label = "June"></option>
-                <option value="12" label = "July"></option>
-                <option value="13" label = "August"></option>
-                <option value="14" label = "September"></option>
-                <option value="15" label = "October"></option>
-                <option value="16" label = "November"></option>
-                <option value="17" label = "December"></option>
-
-                <option value="18" label = "January 2023"></option>
-                <option value="19" label = "February"></option>
-                <option value="20" label = "March"></option>
-                <option value="21" label = "April"></option>
-                <option value="22" label = "May"></option>
-                <option value="23" label = "June"></option>
-                <option value="24" label = "July"></option>
-                <option value="25" label = "August"></option>
-                <option value="26" label = "September"></option>
-                <option value="27" label = "October"></option>
-                <option value="28" label = "November"></option>
-                <option value="29" label = "December"></option>
-
-                <option value="30" label = "January 2024"></option>
-                <option value="31" label = "February"></option>
-                <option value="32" label = "March"></option>
-                <option value="33" label = "April"></option>
-                <option value="34" label = "May"></option>
-                <option value="35" label = "June 2024"></option>
-            </datalist>
+            <form>
+                <p class="fallbackLabel">Select a Month to View</p>
+                <div class="fallbackDatePicker">
+                    <div>
+                        <span>
+                            <label for="month">Month:</label>
+                            <select id="month" name="month"></select>
+                        </span>
+                        <span>
+                            <label for="year">Year:</label>
+                            <select id="year" name="year"></select>
+                        </span>
+                    </div>
+                </div>
+            </form>
         </div>
         </div>                                                           
     </div>
