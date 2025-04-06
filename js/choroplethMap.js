@@ -80,7 +80,16 @@ class ChoroplethMap {
       .join('path')
         .attr('class', 'geo-path')
         .attr('d', vis.geoPath)
-        .attr('fill', '#383838');
+        .attr('fill', '#9467BDFF')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', '0.2');
+
+        // Add an additional layer on top of the map to show the state borders more clearly
+    // const geoBoundaryPath = vis.chart.selectAll('.geo-boundary-path')
+    //     .data([topojson.mesh(vis.data, vis.data.objects.states)])
+    //   .join('path')
+    //     .attr('class', 'geo-boundary-path')
+    //     .attr('d', vis.geoPath);
 
     geoPath
       .on('mouseover', (event,d) => {
@@ -97,12 +106,6 @@ class ChoroplethMap {
       .on('mouseout', () => {
         d3.select('#tooltip').style('display', 'none');
       });
-
-    // Add an additional layer on top of the map to show the state borders more clearly
-    const geoBoundaryPath = vis.chart.selectAll('.geo-boundary-path')
-        .data([topojson.mesh(vis.data, vis.data.objects.states)])
-      .join('path')
-        .attr('class', 'geo-boundary-path')
-        .attr('d', vis.geoPath);
+    
   }
 }
