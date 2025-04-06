@@ -1,5 +1,3 @@
-#import requests as req
-     
 #h = {'Authorization': '59580_caeaa219a643f2b97c597a733e8a86d1'}
 #resp = req.get("https://api2.isbndb.com/books/Wings%20of%20Shadow%20(Crown%20of%20Feathers%20Series)?page=1&pageSize=5&column=title", headers=h)
 #print(resp.json())
@@ -11,12 +9,13 @@ import json
 import urllib.parse
 import pandas as pd
 
-# Script to fill query API to fill the missing subjects and description for the books. Right now it's open library API, nearly the same script was used for
+# Script to use API to fill the missing subjects and description for the books. Right now it's open library API, nearly the same script was used for
 # Google Books API and ISBNdb API. Input json datasets are not in the data in the repo.
 
 API_KEY = "AIzaSyAJ0gmeSp2-Uf0S6Cfpxkw_0z_CosEmpEA"
 HEADERS = {"Authorization": API_KEY}
-BASE_URL = "https://openlibrary.org/search.json?"
+#BASE_URL = "https://openlibrary.org/search.json?"
+BASE_URL = ""
 
 INPUT_CSV = "books.csv"
 INPUT_CSV_CLEANED = "books_cleaned.csv"
@@ -37,11 +36,10 @@ def query_isbndb(title, author):
         #print(data)
         books = data.get("docs", [])
         
-        # Normalize input author
         normalized_author = author.lower().strip()
         #print(books)
 
-        # Find first book where author matches
+        # find first book where author matches
         for book in books:
             book_authors = [a.lower().strip() for a in book.get("author_name", [])]
             if any(normalized_author in a for a in book_authors):
