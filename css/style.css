@@ -9,6 +9,18 @@ body {
     margin: 0 auto;
 }
 
+.arc.active {
+  stroke: #fff;
+  stroke-width: 2px;
+  opacity: 1;
+  fill: white;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.4));
+}
+
+.textBook.active {
+  fill: black;
+}
+
 .geo-path {
   fill: #383838;
 }
@@ -17,3 +29,4 @@ body {
   stroke: #fff;
   fill: none;
   stroke-width: 1;
+}

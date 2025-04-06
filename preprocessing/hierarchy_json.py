@@ -2,9 +2,9 @@ import pandas as pd
 import json
 from collections import defaultdict
 
-# Script which creates a json file to use in the sunburst chart
+# creates a json file to use in the sunburst chart
 
-df = pd.read_csv("data/books_without_empty_subjects.csv", encoding="utf-8", delimiter=";")
+df = pd.read_csv("data/books_without_empty_subjects_2.csv", encoding="utf-8", delimiter=";")
 
 df = df.fillna("")
 
@@ -20,6 +20,7 @@ for _, row in df.iterrows():
 
     district = row["district"]
     state = row["state"]
+    date = row["date"]
 
     subjects = [s.strip() for s in row["subjects"].split(",")] if isinstance(row["subjects"], str) else []
 
@@ -27,7 +28,8 @@ for _, row in df.iterrows():
         state_dict[state][district][subject].append({
             "name": title,
             "author": author,
-            "description": description
+            "date": date,
+            "description": description,
         })
 
 for state, districts in state_dict.items():
@@ -48,5 +50,3 @@ for state, districts in state_dict.items():
 
 with open("data/books_hierarchy_new.json", "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
-
-print("JSON file created: books_hierarchy.json")
