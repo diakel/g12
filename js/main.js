@@ -1,11 +1,64 @@
 const parseMonthYear = d3.timeParse('%b.%y');
-
-// Full dataset is in data/books_hierarchy.json or data/books_without_empty_subjects.csv
+let selectedState, selectedArc = "";
+let selectedBook = null;
+let statesToHighlight = [];
+let sunburst, dataBooks;
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
-  const sunburst = new Sunburst({parentElement: '#vis-sunburst'}, subjectsHierarchyData);
-});  
+  dataBooks = subjectsHierarchyData;
+  sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
+}); 
 
+function filterByState() {
+  if (selectedState !== "") {
+    sunburst.data = dataBooks.children.find(s => s.name === selectedState);
+  } else {
+    sunburst.data = dataBooks;
+  }
+  sunburst.updateVis();
+}
+
+/**
+ * Handles arc selection: filters by the selected arc and updates the data of the sunburst
+ * @param {int} depth 
+ * @param {Object} parent 
+ */
+function selectArc(depth, parent) {
+  if (selectedArc !== "") {
+    let newData = null;
+    switch (depth) {
+      case 1:
+        newData = sunburst.data.children.find(d => d.name === selectedArc);
+        break;
+      case 2:
+        newData = parent.data.children.find(d => d.name === selectedArc);
+        break;
+      case 3:
+        // go to the outer layer, find the parent, then from the parent find the selected arc
+        newData = parent.parent.data.children.find(d => d.name === parent.data.name).children.find(d => d.name === selectedArc);
+    }
+    sunburst.data = newData;
+  } else {
+    sunburst.data = dataBooks;
+  }
+  sunburst.updateVis();
+}
+
+/**
+ * Fills statesToHighlight array with the states in which the selected book was banned
+ */
+function bookSelect() {
+  statesToHighlight = [];
+  if (selectedBook) {
+    for (const state of dataBooks.children) {
+      const stateHierarchy = d3.hierarchy(state);
+      if (stateHierarchy.descendants().find(d => d.data.name === selectedBook.name && d.data.author === selectedBook.author)) {
+        statesToHighlight.push(state.name);
+      }
+    }
+    console.log(statesToHighlight);
+  }
+}
 
 
 /**

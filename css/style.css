@@ -9,6 +9,18 @@ body {
     margin: 0 auto;
 }
 
+.arc.active {
+  stroke: #fff;
+  stroke-width: 2px;
+  opacity: 1;
+  fill: white;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.4));
+}
+
+.textBook.active {
+  fill: black;
+}
+
 .slidecontainer {
   width: 80%;
 }
@@ -56,17 +68,18 @@ body {
 .geo-boundary-path {
   stroke: #fff;
   fill: none;
-  stroke-width: 1}
+  stroke-width: 1
+}
 
-  #tooltip {
-    position: absolute;
-    display: none;
-    background: #fff;
-    box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
-    border: 1px solid #ddd;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 8px;
-    min-width: 160px;
-    color: #333;
-  }
+#tooltip {
+  position: absolute;
+  display: none;
+  background: #fff;
+  box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px;
+  min-width: 160px;
+  color: #333;
+}
