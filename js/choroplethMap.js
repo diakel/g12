@@ -136,5 +136,20 @@ class ChoroplethMap {
 
     // EXIT
     geoPath.exit().remove();
+
+    vis.renderLegend();
+  }
+
+  renderLegend() {
+    let vis = this;
+
+    const colorLegend = d3.legendColor()
+      .scale(vis.colorScale)
+      .title("Number of banned books");
+
+    vis.chart.append("g")
+      .attr("class", "legend")
+      .attr("transform", "translate(600,20)")
+      .call(colorLegend);
   }
 }
