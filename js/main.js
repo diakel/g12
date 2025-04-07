@@ -1,4 +1,5 @@
 const parseMonthYear = d3.timeParse('%b.%y');
+let date = "";
 let selectedState, selectedArc = "";
 let selectedBook = null;
 let statesToHighlight = []; // this variable stores states in which the selected book was banned
@@ -21,6 +22,7 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
 // load map data
 d3.json('data/us-states.json')
   .then(data => {
+    console.log(date);
     stateData = data;
 
     // Mercator projection
@@ -83,52 +85,24 @@ function bookSelect() {
   choroplethMap.updateVis();
 }
 
-// dealing with the month picker, range from July 2021 to June 2024
-const selectMonth = document.getElementById("month");
-const selectYear = document.getElementById("year");
-const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
 
-// Range july 2021 to june 2024, note 0 based months
-const startYear = 2021;
-const startMonth = 6;
-const endYear = 2024;
-const endMonth = 5;
+const selectedDateHeader = document.getElementById("selectedDate");
+const selectDate = document.getElementById("date");
+const dateValue = ["Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov.21", "Dec.21",
+  "Jan.22", "Feb.22", "Mar.22", "Apr.22", "May.22", "Jun.22","Jul.22", "Aug.22", "Sep.22", "Oct.22", "Nov.22", "Dec.22",
+  "Jan.23", "Feb.23", "Mar.23", "Apr.23", "May.23", "Jun.23","Jul.23", "Aug.23", "Sep.23", "Oct.23", "Nov.23", "Dec.23",
+  "Jan.24", "Feb.24", "Mar.24", "Apr.24", "May.24", "Jun.24"];
 
-function setYears() {
-  for (let year = startYear; year <= endYear; year++) {
-    const option = document.createElement("option");
-    option.value = year;
-    option.textContent = year;
-    selectYear.appendChild(option);
-  }
-}
-
-function setMonths(selectedYear) {
-  // Clear options
-  selectMonth.innerHTML = "";
-
-  let start = 0;
-  let end = 11;
-
-  // cond for start and end months based on years
-  if (selectedYear == startYear) start = startMonth;
-  if (selectedYear == endYear) end = endMonth;
-
-  for (let i = start; i <= end; i++) {
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = months[i];
-    selectMonth.appendChild(option);
-  }
-}
-
-setYears();
-selectYear.value = startYear;
-setMonths(startYear);
-// Update months when year changes
-selectYear.addEventListener("change", () => {
-  setMonths(parseInt(selectYear.value));
+selectDate.addEventListener("change", () => {
+  console.log(`DATE: ${dateValue[selectDate.value]}`);
+  date = parseMonthYear(dateValue[selectDate.value]);
+  console.log(date);
 });
+
+function updateDateHeader() {
+  const selectedDate = dateValue[selectDate.value];
+  selectedDateHeader.textContent = `Selected Date: ${selectedDate}`;
+};
+
+// update header with new date
+selectDate.addEventListener("input", updateDateHeader);

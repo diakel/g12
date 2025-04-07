@@ -77,10 +77,6 @@ input[type="range"] {
   margin: 0;
 }
 
-/* .geo-path:hover {
-  fill: #CE6DBDFF;
-} */
-
 .geo-boundary-path {
   stroke: #ffffff;
   fill: none;
