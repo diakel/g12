@@ -2,11 +2,14 @@ body {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 15px;
     color: black;
+    background-color: lightgray;
   }
   
 .container {
     width: 100%;
     margin: 0 auto;
+    padding-top: 15px;
+    padding-left: 20px;
 }
 
 .arc.active {
