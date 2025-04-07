@@ -1,7 +1,7 @@
 const parseMonthYear = d3.timeParse('%b.%y');
 let date = "";
-let selectedState, selectedArc = "";
-let selectedBook = null;
+let selectedState = "";
+let selectedBook, selectedArc = null;
 let statesToHighlight = []; // this variable stores states in which the selected book was banned
 let stateCounts = null; // this variable stores states with their respective number of banned books
 let sunburst, dataBooks, stateData, choroplethMap;
@@ -16,11 +16,8 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
     d => d.parent.parent.parent.data.name
   ).map(([state, count]) => ({ state, count }));
 
-  sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
-}); 
-
-// load map data
-d3.json('data/us-states.json')
+    // load map data
+  d3.json('data/us-states.json')
   .then(data => {
     stateData = data;
 
@@ -29,8 +26,11 @@ d3.json('data/us-states.json')
       parentElement: '#mercator',
       projection: d3.geoMercator()
     }, stateData);
+
+    sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
   })
-.catch(error => console.error(error));
+  .catch(error => console.error(error));
+}); 
 
 function filterByState() {
   if (selectedState !== "") {
@@ -47,22 +47,41 @@ function filterByState() {
  * @param {Object} parent 
  */
 function selectArc(depth, parent) {
-  if (selectedArc !== "") {
+  if (selectedArc) {
     let newData = null;
+    if (parent.data.name === "United States") { 
+      selectedState = selectedArc.data.name;
+      choroplethMap.updateVis();
+    }
     switch (depth) {
       case 1:
-        newData = sunburst.data.children.find(d => d.name === selectedArc);
+        newData = sunburst.data.children.find(d => d.name === selectedArc.data.name);
         break;
       case 2:
-        newData = parent.data.children.find(d => d.name === selectedArc);
+        newData = parent.data.children.find(d => d.name === selectedArc.data.name);
         break;
       case 3:
         // go to the outer layer, find the parent, then from the parent find the selected arc
-        newData = parent.parent.data.children.find(d => d.name === parent.data.name).children.find(d => d.name === selectedArc);
+        newData = parent.parent.data.children.find(d => d.name === parent.data.name).children.find(d => d.name === selectedArc.data.name);
     }
     sunburst.data = newData;
   } else {
     sunburst.data = dataBooks;
+  }
+  sunburst.updateVis();
+}
+
+function selectRoot() {
+  if (selectedArc.parent) {
+    sunburst.data = selectedArc.parent.data;
+    selectedArc = selectedArc.parent;
+  } else {
+    selectedArc = null;
+    sunburst.data = dataBooks;
+  }
+  if (sunburst.data.name === "United States") {
+    selectedState = "";
+    choroplethMap.updateVis();
   }
   sunburst.updateVis();
 }
@@ -79,7 +98,7 @@ function bookSelect() {
         statesToHighlight.push(state.name);
       }
     }
-    console.log(statesToHighlight);
+    //console.log(statesToHighlight);
   }
   choroplethMap.updateVis();
 }
