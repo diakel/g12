@@ -103,5 +103,8 @@ function updateDateHeader() {
   selectedDateHeader.textContent = `Selected Date: ${selectedDate}`;
 };
 
+// initialize value
+updateDateHeader();
+
 // update header with new date
 selectDate.addEventListener("input", updateDateHeader);
