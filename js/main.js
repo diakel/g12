@@ -145,7 +145,9 @@ function bookSelect() {
   if (selectedBook) {
     for (const state of dataBooks.children) {
       const stateHierarchy = d3.hierarchy(state);
-      if (stateHierarchy.descendants().find(d => d.data.name === selectedBook.name && d.data.author === selectedBook.author)) {
+      if (stateHierarchy.descendants().find(d => d.data.name === selectedBook.name && d.data.author === selectedBook.author
+        && (d.data.date === date || date === "" || date === "Jul.21-Jun.24")
+      )) {
         statesToHighlight.push(state.name);
       }
     }
@@ -169,7 +171,10 @@ selectDate.addEventListener("change", () => {
   } else {
     date = "";
   }
-  
+  selectedState = "";
+  selectedBook, selectedArc = null;
+  statesToHighlight = [];
+  d3.select("#tooltip-sun").style("display", "none");
   filterData();
 });
 
