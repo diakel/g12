@@ -98,8 +98,6 @@ class ChoroplethMap {
       d3.select('#tooltip').style('display', 'none');
       if (selectedState !== d.properties.name) {
         d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : vis.colorScale(stateCountMap.get(d.properties.name) || 0));
-        // d3.select(this).attr('fill', vis.colorScale(stateCountMap.get(d.properties.name) || 0));
-        // console.log(d.properties.name, stateCountMap.get(d.properties.name));
       }
     })
     .on('click', stateClick);
@@ -126,7 +124,6 @@ class ChoroplethMap {
     function hoveredState(event, d) {
       // highlight when hovering only if not already active
       if (!statesToHighlight.includes(d.properties.name) && selectedState !== d.properties.name) {
-        // d3.select(this).attr('fill', '#b46dce');
         d3.select(this).attr('fill', sunburst.colorScale(d.properties.name));
       }
 

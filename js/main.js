@@ -11,13 +11,14 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
   const dataBooksHierarchy = d3.hierarchy(dataBooks);
 
+  // creates an object with state, count of banned books
   stateCounts = d3.rollups(
     dataBooksHierarchy.leaves(),           
     v => v.length,
     d => d.parent.parent.parent.data.name
   ).map(([state, count]) => ({ state, count }));
 
-    // load map data
+  // load map data
   d3.json('data/us-states.json')
   .then(data => {
     stateData = data;
@@ -34,10 +35,16 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   .catch(error => console.error(error));
 }); 
 
+/**
+ * Handles change in the data selector
+ */
 function filterData() {
   filteredData = JSON.parse(JSON.stringify(dataBooks));
   
   if (date !== "" && date !== "Jul.21-Jun.24") {
+    selectedState = "";
+    selectedBook = null;
+    statesToHighlight = [];
     filteredData.children.forEach(district => {
       district.children.forEach(genre => {
         // Filter the books based on the date and update the genre's children
@@ -67,14 +74,14 @@ function filterData() {
   choroplethMap.updateVis();
 }
 
+/**
+ * Handles state selection by updating the sunburst
+ */
 function filterByState() {
   const stateData = filteredData.children.find(s => s.name === selectedState);
   if (stateData) {
-    // sunburst.data = dataBooks.children.find(s => s.name === selectedState);
     sunburst.data = stateData;
-    // sunburst.data = filteredData.children.find(s => s.name === selectedState);
   } else {
-    // sunburst.data = dataBooks;
     sunburst.data = filteredData;
   }
   selectedArc = sunburst.root;
@@ -111,19 +118,22 @@ function selectArc(depth, parent) {
   sunburst.updateVis();
 }
 
+/**
+ * Handles clicking on the root of the sunburst (going a level up basically);
+ */
 function selectRoot() {
   if (selectedArc.parent) {
     sunburst.data = selectedArc.parent.data;
     selectedArc = selectedArc.parent;
   } else {
     selectedArc = null;
-    // sunburst.data = dataBooks;
     sunburst.data = filteredData;
   }
   if (sunburst.data.name === "United States") {
     selectedState = "";
     choroplethMap.updateVis();
   }
+  selectedBook = null;
   sunburst.updateVis();
 }
 
@@ -139,12 +149,11 @@ function bookSelect() {
         statesToHighlight.push(state.name);
       }
     }
-    //console.log(statesToHighlight);
   }
   choroplethMap.updateVis();
 }
 
-
+// Data selector
 const selectedDateHeader = document.getElementById("selectedDate");
 const selectDate = document.getElementById("date");
 selectDate.value = 0;
@@ -154,9 +163,7 @@ const dateValue = ["Jul.21-Jun.24", "Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov
   "Jan.24", "Feb.24", "Mar.24", "Apr.24", "May.24", "Jun.24"];
 
 selectDate.addEventListener("change", () => {
-  //console.log(`DATE: ${dateValue[selectDate.value]}`);
-  //date = selectDate.value === 0 ? "" : parseMonthYear(dateValue[selectDate.value]);
-  console.log(selectDate.value);
+  // console.log(selectDate.value);
   if (selectDate.value !== 0) {
     date = dateValue[selectDate.value];
   } else {
