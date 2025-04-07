@@ -139,7 +139,7 @@ class ChoroplethMap {
 
     function stateClick(event, d) {
       // wipe statesToHighlight array
-      statesToHighlight = [];
+      //statesToHighlight = [];
       // if already selected, deselect
       if (selectedState === d.properties.name || !stateCountMap.get(d.properties.name)) {
         selectedState = "";
