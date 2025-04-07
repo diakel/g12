@@ -87,14 +87,14 @@ class ChoroplethMap {
     .append('path')
     .attr('class', 'geo-path')
     .attr('d', vis.geoPath)
-    .attr('fill', d => statesToHighlight.includes(d.properties.name) ? '#261d6d' : '#9467BDFF')
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' :statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
     .attr('stroke', '#fff')
     .attr('stroke-width', '0.2')
     .on('mouseover', function(event, d) {
-      
+
       // highlight when hovering only if not already active
-      if (!statesToHighlight.includes(d.properties.name)) {
-        d3.select(this).attr('fill', '#CE6DBDFF');
+      if (!statesToHighlight.includes(d.properties.name) && selectedState !== d.properties.name) {
+        d3.select(this).attr('fill', '#b46dce');
       }
 
       d3.select('#tooltip')
@@ -107,13 +107,28 @@ class ChoroplethMap {
     })
     .on('mouseout', function(event, d) {
       d3.select('#tooltip').style('display', 'none');
-      d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#261d6d' : '#9467BDFF');
+      if (selectedState !== d.properties.name) {
+        d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF');
+      }
+    })
+    .on('click', function(event, d) {
+      // wipe statesToHighlight array
+      statesToHighlight = [];
+      if (selectedState === d.properties.name) {
+        selectedState = "";
+        //d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF');
+      } else {
+        selectedState = d.properties.name;
+        //d3.select(this).attr('fill',  '#CE6DBDFF');
+      }
+      choroplethMap.updateVis();
+      filterByState();
     });
 
     // UPDATE
     geoPath
     .attr('d', vis.geoPath)
-    .attr('fill', d => statesToHighlight.includes(d.properties.name) ? '#261d6d' : '#9467BDFF')
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' : statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
     .attr('stroke', '#fff')
     .attr('stroke-width', '0.2');
 
