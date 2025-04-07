@@ -22,7 +22,6 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
 // load map data
 d3.json('data/us-states.json')
   .then(data => {
-    console.log(date);
     stateData = data;
 
     // Mercator projection
