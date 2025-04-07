@@ -5,6 +5,7 @@ let selectedBook, selectedArc = null;
 let statesToHighlight = []; // this variable stores states in which the selected book was banned
 let stateCounts = null; // this variable stores states with their respective number of banned books
 let sunburst, dataBooks, stateData, choroplethMap;
+let filteredData;
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
@@ -34,7 +35,7 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
 }); 
 
 function filterData() {
-  let filteredData = JSON.parse(JSON.stringify(dataBooks));
+  filteredData = JSON.parse(JSON.stringify(dataBooks));
   
   if (date !== "" && date !== "Jul.21-Jun.24") {
     filteredData.children.forEach(district => {
@@ -49,20 +50,34 @@ function filterData() {
     
     // Remove any districts that don't have any genres left
     filteredData.children = filteredData.children.filter(district => district.children.length > 0);
+
+    sunburst.data = filteredData;
+  } else {
+    sunburst.data = dataBooks;
   }
 
-  sunburst.data = filteredData;
-
   sunburst.updateVis();
+  const filteredDataHierarchy = d3.hierarchy(filteredData);
+  stateCounts = d3.rollups(
+    filteredDataHierarchy.leaves(),           
+    v => v.length,
+    d => d.parent.parent.parent.data.name
+  ).map(([state, count]) => ({ state, count }));
+
   choroplethMap.updateVis();
 }
 
 function filterByState() {
-  if (selectedState !== "") {
-    sunburst.data = dataBooks.children.find(s => s.name === selectedState);
+  const stateData = filteredData.children.find(s => s.name === selectedState);
+  if (stateData) {
+    // sunburst.data = dataBooks.children.find(s => s.name === selectedState);
+    sunburst.data = stateData;
+    // sunburst.data = filteredData.children.find(s => s.name === selectedState);
   } else {
-    sunburst.data = dataBooks;
+    // sunburst.data = dataBooks;
+    sunburst.data = filteredData;
   }
+  selectedArc = sunburst.root;
   sunburst.updateVis();
 }
 
@@ -102,7 +117,8 @@ function selectRoot() {
     selectedArc = selectedArc.parent;
   } else {
     selectedArc = null;
-    sunburst.data = dataBooks;
+    // sunburst.data = dataBooks;
+    sunburst.data = filteredData;
   }
   if (sunburst.data.name === "United States") {
     selectedState = "";
@@ -131,6 +147,7 @@ function bookSelect() {
 
 const selectedDateHeader = document.getElementById("selectedDate");
 const selectDate = document.getElementById("date");
+selectDate.value = 0;
 const dateValue = ["Jul.21-Jun.24", "Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov.21", "Dec.21",
   "Jan.22", "Feb.22", "Mar.22", "Apr.22", "May.22", "Jun.22","Jul.22", "Aug.22", "Sep.22", "Oct.22", "Nov.22", "Dec.22",
   "Jan.23", "Feb.23", "Mar.23", "Apr.23", "May.23", "Jun.23","Jul.23", "Aug.23", "Sep.23", "Oct.23", "Nov.23", "Dec.23",
