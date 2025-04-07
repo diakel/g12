@@ -17,8 +17,29 @@ body {
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.4));
 }
 
+.arc:hover {
+  filter: brightness(60%);
+}
+
 .textBook.active {
   fill: black;
+}
+
+#tooltip-sun {
+  position: absolute;
+  top: 500px;
+  left: 440px;
+  transform: translate(-50%, -45%);
+  /*max-width: 300px;
+  max-height: 400px;*/
+  overflow-y: auto;
+  text-align: center;
+  font-family: sans-serif;
+  color: #444;
+  pointer-events: auto;
+  z-index: 10;
+  display: none;
+  scrollbar-width: thin;
 }
 
 .slidecontainer {

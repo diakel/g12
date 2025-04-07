@@ -47,6 +47,14 @@ class Sunburst {
       vis.chart = vis.svg.append('g')
           .attr('transform', `translate(${vis.width / 2},${vis.height / 2})`);
 
+      // The inner circle of the sunburst
+      vis.rootCircle = vis.chart
+          .append("circle")
+          .attr("class", "root")
+          .style("fill", "none")
+          .attr("pointer-events", "all")
+          .style("cursor", "pointer");
+
      // vis.renderLegend(); // for future use
       vis.updateVis();
     }
@@ -67,6 +75,15 @@ class Sunburst {
 
       // Colour Scale for the categories
       vis.colorScale = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.root.children.length + 1));
+
+      vis.rootCircle
+      .on("click", clickedRoot);
+
+      function clickedRoot(event, p) {
+        console.log("circle clicked");
+        //console.log(selectedArc);
+        if (selectedArc) selectRoot();
+      }
         
       vis.renderVis();
     }
@@ -97,7 +114,12 @@ class Sunburst {
         })
         .attr("d", vis.arcGenerator)
         .style("cursor", "pointer")
-        .on("click", clickedArc);
+        .on("click", clickedArc)
+        .on("mouseover", hoveredArc)
+        .on("mouseout", () => { 
+          if (selectedBook) return;
+          d3.select("#tooltip-sun").style("display", "none");
+        });
   
       // enter + update
       arcsEnter.merge(arcs)
@@ -117,6 +139,48 @@ class Sunburst {
         .merge(arcs.select("title"))
         .text(d => d.data.name);
       
+      vis.rootCircle.attr("r", Math.sqrt(vis.root.children[0].y0));
+
+      function hoveredArc(event, d) {
+        /*
+        vis.chart.selectAll(".hover-label").remove();
+
+        const arcDesc = vis.chart.append("g")
+          .attr("class", "hover-label")
+          .attr("text-anchor", "middle")
+          .attr("fill", "#555");
+
+        arcDesc.append("text")
+          .attr("dy", "-0.1em")
+          .attr("fill", "#888")
+          .attr("font-size", "18px")
+          .attr("font-weight", 700)
+          .text(d.data.name);
+        
+        if (!d.children) {
+          arcDesc.append("text")
+            .attr("y", 14)
+            .attr("font-size", "14px")
+            .attr("fill", "#888")
+            .text(d.data.description ? d.data.author + "\n" + d.data.description : d.data.author);
+        }
+        */
+       if (selectedBook) return;
+        d3.select('#tooltip-sun')
+          .html(`
+            <h2 style="margin: 0; font-size: 18px;">${d.data.name}</h2>
+            <div style="font-size: 16px; color: #555; margin-top: 0.2em;">
+              ${d.data.author ? d.data.author : ""}
+              <div style="font-size: 14px; color: #666; margin-top: 0.5em;">
+              ${d.data.description ? d.data.description : ""}
+              </div>
+            </div>
+          `)
+          .style("display", "block")
+          .style("max-width", () => { return Math.sqrt(vis.root.children[0].y0) + 60 + "px"; })
+          .style("max-height", () => { return Math.sqrt(vis.root.children[0].y0) + 80 + "px"; });
+      }
+
       const labels = vis.chart
         .attr("text-anchor", "middle")
         .selectAll("text")
@@ -155,7 +219,13 @@ class Sunburst {
           .style("font-weight", "700")
           .style("fill", "white")
           .style("cursor", "pointer")
-          .on("click", clickedArc);
+          .on("click", clickedArc)
+          .on("mouseover", hoveredArc)
+          .on("mouseout", () => { 
+            //vis.chart.selectAll(".hover-label").remove(); 
+            if (selectedBook) return;
+            d3.select("#tooltip-sun").style("display", "none");
+          });
       
           const bookLabels = vis.chart
           .attr("text-anchor", "middle")
@@ -170,7 +240,7 @@ class Sunburst {
             .attr("dy", "0.35em")
             .text(d => {
               //d.data.name
-              const maxChars = Math.floor((Math.sqrt(d.y1) - Math.sqrt(d.y0)) / 3);
+              const maxChars = Math.floor((Math.sqrt(d.y1) - Math.sqrt(d.y0)) / 4);
               return d.data.name.length > maxChars ? d.data.name.substring(0, maxChars - 3) + "…" : d.data.name;
             })
             .style("font-size", d => {
@@ -180,41 +250,46 @@ class Sunburst {
             })
             .style("font-weight", "500")
             .style("fill", d => selectedBook ? (selectedBook.name === d.data.name && selectedBook.author === d.data.author ? "black" : "white") : "white")
-            .style("cursor", "pointer");
-        
-
-      // Zoom features
-
-      /*
-
-      const parent = vis.chart.append("circle")
-          .datum(vis.root)
-          .attr("r", vis.radius)
-          .attr("fill", "none")
-          .attr("stroke", "black")
-          .attr("pointer-events", "all")
-          .on("click", clickedCircle);
-      */
+            .style("cursor", "pointer")
+            .on("click", clickedArc)
+            .on("mouseover", hoveredArc)
+            .on("mouseout", () => { 
+              if (selectedBook) return;
+              d3.select("#tooltip-sun").style("display", "none");
+            });
+      
           
       function clickedArc(event, d) {
         if (d.children) {
-          selectedArc = d.data.name;
-          selectArc(d.depth, d.parent);
+          selectedArc = d;
+          selectArc(selectedArc.depth, selectedArc.parent);
         } else {
           const isActive = selectedBook === d.data;
           if (isActive) selectedBook = null;
-          else selectedBook = d.data;
+          else { 
+            selectedBook = d.data; 
+            d3.select('#tooltip-sun')
+            .html(`
+              <h2 style="margin: 0; font-size: 18px;">${d.data.name}</h2>
+              <div style="font-size: 16px; color: #555; margin-top: 0.2em;">
+                ${d.data.author ? d.data.author : ""}
+                <div style="font-size: 14px; color: #666; margin-top: 0.5em;">
+                ${d.data.description ? d.data.description : ""}
+                </div>
+              </div>
+            `)
+            .style("display", "block")
+            .style("max-width", () => { return Math.sqrt(vis.root.children[0].y0) + 60 + "px"; })
+            .style("max-height", () => { return Math.sqrt(vis.root.children[0].y0) + 80 + "px"; });
+          }
           //d3.selectAll(".arc").classed('active', false);
           //bookSelect(event, d.parent);
           //d3.selectAll(".arc").filter(d => d.data.name === selectedBook.name && d.data.author === selectedBook.author).classed("active", !isActive);
           //d3.select(this).classed('active', !isActive);
           vis.renderVis();
+          //hoveredArc(event, d);
           bookSelect();
         }
-      }
-
-      function clickedCircle(event, p) {
-        console.log("circle clicked");
       }
     }
 
