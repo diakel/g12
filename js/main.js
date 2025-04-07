@@ -87,14 +87,14 @@ function bookSelect() {
 
 const selectedDateHeader = document.getElementById("selectedDate");
 const selectDate = document.getElementById("date");
-const dateValue = ["Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov.21", "Dec.21",
+const dateValue = ["Jul.21-Jun.24", "Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov.21", "Dec.21",
   "Jan.22", "Feb.22", "Mar.22", "Apr.22", "May.22", "Jun.22","Jul.22", "Aug.22", "Sep.22", "Oct.22", "Nov.22", "Dec.22",
   "Jan.23", "Feb.23", "Mar.23", "Apr.23", "May.23", "Jun.23","Jul.23", "Aug.23", "Sep.23", "Oct.23", "Nov.23", "Dec.23",
   "Jan.24", "Feb.24", "Mar.24", "Apr.24", "May.24", "Jun.24"];
 
 selectDate.addEventListener("change", () => {
   console.log(`DATE: ${dateValue[selectDate.value]}`);
-  date = parseMonthYear(dateValue[selectDate.value]);
+  date = selectDate.value === 0 ? "" : parseMonthYear(dateValue[selectDate.value]);
   console.log(date);
 });
 
