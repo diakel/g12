@@ -5,16 +5,16 @@ class ChoroplethMap {
    * @param {Object}
    * @param {Array}
    */
-  constructor(_config, _data) {
+  constructor(config, data) {
     this.config = {
-      parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 550,
-      containerHeight: _config.containerHeight || 350,
-      margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
-      projection: _config.projection || d3.geoAlbersUsa(),  // Use Albers USA projection
+      parentElement: config.parentElement,
+      containerWidth: config.containerWidth || 850,
+      containerHeight: config.containerHeight || 550,
+      margin: config.margin || {top: 0, right: 0, bottom: 0, left: 0},
+      projection: config.projection || d3.geoAlbersUsa(),  // Use Albers USA projection
       tooltipPadding: 10
     }
-    this.data = _data;
+    this.data = data;
     this.initVis();
   }
   
@@ -58,6 +58,7 @@ class ChoroplethMap {
    * Bind data to visual elements.
    */
   renderVis() {
+    
     let vis = this;
 
     // Convert compressed TopoJSON to GeoJSON format
@@ -76,33 +77,58 @@ class ChoroplethMap {
 
     // Append shapes of U.S. states
     const geoPath = vis.chart.selectAll('.geo-path')
-        .data(states.features)
-      .join('path')
-        .attr('class', 'geo-path')
-        .attr('d', vis.geoPath)
-        .attr('fill', '#383838');
+    .data(states.features);
 
+    // ENTER: Create new elements when data is added
+    geoPath.enter()
+    .append('path')
+    .attr('class', 'geo-path')
+    .attr('d', vis.geoPath)
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' :statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '0.2')
+    .on('mouseover', function(event, d) {
+      // highlight when hovering only if not already active
+      if (!statesToHighlight.includes(d.properties.name) && selectedState !== d.properties.name) {
+        d3.select(this).attr('fill', '#b46dce');
+      }
+
+      d3.select('#tooltip')
+        .style('display', 'block')
+        .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+        .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+        .html(`
+          <h5 style="margin: 0; padding: 0; line-height: 1; font-size: 14px; white-space: nowrap;">${d.properties.name}</h5>
+          <span>Number of books banned in this state: ${stateCounts.find(item => item.state === d.properties.name).count}</span>
+        `);
+    })
+    .on('mouseout', function(event, d) {
+      d3.select('#tooltip').style('display', 'none');
+      if (selectedState !== d.properties.name) {
+        d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF');
+      }
+    })
+    .on('click', function(event, d) {
+      // wipe statesToHighlight array
+      statesToHighlight = [];
+      // if already selected, deselect
+      if (selectedState === d.properties.name) {
+        selectedState = "";
+      } else { // select state
+        selectedState = d.properties.name;
+      }
+      choroplethMap.updateVis();
+      filterByState();
+    });
+
+    // UPDATE
     geoPath
-      .on('mouseover', (event,d) => {
-        
-        //d3.select(this).attr('fill', 'white');
-        d3.select('#tooltip')
-          .style('display', 'block')
-          .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
-          .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-          .html(`
-            <div class="tooltip-title"> ${d.properties.name} </div>
-          `);
-      })
-      .on('mouseout', () => {
-        d3.select('#tooltip').style('display', 'none');
-      });
+    .attr('d', vis.geoPath)
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' : statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
+    .attr('stroke', '#fff')
+    .attr('stroke-width', '0.2');
 
-    // Add an additional layer on top of the map to show the state borders more clearly
-    const geoBoundaryPath = vis.chart.selectAll('.geo-boundary-path')
-        .data([topojson.mesh(vis.data, vis.data.objects.states)])
-      .join('path')
-        .attr('class', 'geo-boundary-path')
-        .attr('d', vis.geoPath);
+    // EXIT
+    geoPath.exit().remove();
   }
 }
