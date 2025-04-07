@@ -28,9 +28,34 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
     }, stateData);
 
     sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
+    filterData();
   })
   .catch(error => console.error(error));
 }); 
+
+function filterData() {
+  let filteredData = JSON.parse(JSON.stringify(dataBooks));
+  
+  if (date !== "" && date !== "Jul.21-Jun.24") {
+    filteredData.children.forEach(district => {
+      district.children.forEach(genre => {
+        // Filter the books based on the date and update the genre's children
+        genre.children = genre.children.filter(book => book.children[0].date === date);
+      });
+    
+      // Remove any genres that don't have any books left
+      district.children = district.children.filter(genre => genre.children.length > 0);
+    });
+    
+    // Remove any districts that don't have any genres left
+    filteredData.children = filteredData.children.filter(district => district.children.length > 0);
+  }
+
+  sunburst.data = filteredData;
+
+  sunburst.updateVis();
+  choroplethMap.updateVis();
+}
 
 function filterByState() {
   if (selectedState !== "") {
@@ -112,9 +137,16 @@ const dateValue = ["Jul.21-Jun.24", "Jul.21", "Aug.21", "Sep.21", "Oct.21", "Nov
   "Jan.24", "Feb.24", "Mar.24", "Apr.24", "May.24", "Jun.24"];
 
 selectDate.addEventListener("change", () => {
-  console.log(`DATE: ${dateValue[selectDate.value]}`);
-  date = selectDate.value === 0 ? "" : parseMonthYear(dateValue[selectDate.value]);
-  console.log(date);
+  //console.log(`DATE: ${dateValue[selectDate.value]}`);
+  //date = selectDate.value === 0 ? "" : parseMonthYear(dateValue[selectDate.value]);
+  console.log(selectDate.value);
+  if (selectDate.value !== 0) {
+    date = dateValue[selectDate.value];
+  } else {
+    date = "";
+  }
+  
+  filterData();
 });
 
 function updateDateHeader() {
