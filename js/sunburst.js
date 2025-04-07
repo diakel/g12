@@ -82,6 +82,8 @@ class Sunburst {
       vis.rootCircle
         .on("click", () => { if (selectedArc) selectRoot(); });
 
+      d3.select("#tooltip-sun").style("display", "none");
+
       vis.renderVis();
     }
   
