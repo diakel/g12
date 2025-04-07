@@ -73,8 +73,12 @@ class Sunburst {
 
       vis.root = partition(vis.data);
 
-      // Colour Scale for the categories
-      vis.colorScale = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.root.children.length + 1));
+      // Colour Scale for the arcs
+      const topLevelNames = vis.root.children.map(d => d.data.name);
+      vis.colorScale = d3.scaleOrdinal()
+        .domain(topLevelNames)
+        .range(d3.quantize(d3.interpolateRainbow, topLevelNames.length + 1));
+      //vis.colorScale = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.root.children.length + 1));
 
       vis.rootCircle
         .on("click", clickedRoot);
@@ -142,29 +146,6 @@ class Sunburst {
       vis.rootCircle.attr("r", Math.sqrt(vis.root.children[0].y0));
 
       function hoveredArc(event, d) {
-        /*
-        vis.chart.selectAll(".hover-label").remove();
-
-        const arcDesc = vis.chart.append("g")
-          .attr("class", "hover-label")
-          .attr("text-anchor", "middle")
-          .attr("fill", "#555");
-
-        arcDesc.append("text")
-          .attr("dy", "-0.1em")
-          .attr("fill", "#888")
-          .attr("font-size", "18px")
-          .attr("font-weight", 700)
-          .text(d.data.name);
-        
-        if (!d.children) {
-          arcDesc.append("text")
-            .attr("y", 14)
-            .attr("font-size", "14px")
-            .attr("fill", "#888")
-            .text(d.data.description ? d.data.author + "\n" + d.data.description : d.data.author);
-        }
-        */
        if (selectedBook) return;
         d3.select('#tooltip-sun')
           .html(`
@@ -184,36 +165,19 @@ class Sunburst {
       const labels = vis.chart
         .attr("text-anchor", "middle")
         .selectAll("text")
-        .data(vis.root.descendants().filter(d => d.depth && d.children && (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > 1400))
+        .data(vis.root.descendants().filter(d => d.depth && d.children && (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > 1400), d => d.data.name)
         .join("text")
           .attr("transform", function(d) {
-            if (d.data.name.length < 200) {
-              const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
-              const y = (Math.sqrt(d.y0) + Math.sqrt(d.y1)) / 2;
-              return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
-            } else {
-              /*
-              const angle = ((d.x0 + d.x1) / 2) * 180 / Math.PI;
-              const radius = (Math.sqrt(d.y0) + Math.sqrt(d.y1)) / 2;
-            
-              const x = Math.cos((d.x0 + d.x1) / 2 - Math.PI / 2) * radius;
-              const y = Math.sin((d.x0 + d.x1) / 2 - Math.PI / 2) * radius;
-          
-              return `translate(${x},${y}) rotate(${angle < 180 ? angle : angle - 180})`;
-              */
-            }
+            const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+            const y = (Math.sqrt(d.y0) + Math.sqrt(d.y1)) / 2;
+            return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
           })
           .attr("dy", "0.35em")
           .text(d => {
-            //d.data.name
-            // console.log(d.data.name, (Math.sqrt(d.y1) - Math.sqrt(d.y0)) * (d.x1 - d.x0));
             const maxChars = 9;
             return d.data.name.length > maxChars ? d.data.name.substring(0, maxChars - 3) + "…" : d.data.name;
           })
           .style("font-size", d => {
-            const arcWidth = (d.x1 - d.x0) * vis.radius;
-            const maxChars = Math.floor(arcWidth / 6);
-            //return Math.max(9, Math.min(arcWidth / d.data.name.length, 16)) + "px";
             return "9px";
           })
           .style("font-weight", "700")
@@ -222,7 +186,6 @@ class Sunburst {
           .on("click", clickedArc)
           .on("mouseover", hoveredArc)
           .on("mouseout", () => { 
-            //vis.chart.selectAll(".hover-label").remove(); 
             if (selectedBook) return;
             d3.select("#tooltip-sun").style("display", "none");
           });
@@ -230,7 +193,7 @@ class Sunburst {
           const bookLabels = vis.chart
           .attr("text-anchor", "middle")
           .selectAll("textBook")
-          .data(vis.root.descendants().filter(d => d.depth && !d.children && (Math.sqrt(d.y1) - Math.sqrt(d.y0)) * (d.x1 - d.x0) > 1.5))
+          .data(vis.root.descendants().filter(d => d.depth && d.depth < 4 && !d.children && (Math.sqrt(d.y1) - Math.sqrt(d.y0)) * (d.x1 - d.x0) > 1.5))
           .join("text")
             .attr("transform", function(d) {
               const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
@@ -239,7 +202,6 @@ class Sunburst {
             })
             .attr("dy", "0.35em")
             .text(d => {
-              //d.data.name
               const maxChars = Math.floor((Math.sqrt(d.y1) - Math.sqrt(d.y0)) / 4);
               return d.data.name.length > maxChars ? d.data.name.substring(0, maxChars - 3) + "…" : d.data.name;
             })
