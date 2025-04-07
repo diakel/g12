@@ -77,7 +77,7 @@ class Sunburst {
       vis.colorScale = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.root.children.length + 1));
 
       vis.rootCircle
-      .on("click", clickedRoot);
+        .on("click", clickedRoot);
 
       function clickedRoot(event, p) {
         console.log("circle clicked");

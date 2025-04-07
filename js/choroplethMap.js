@@ -51,6 +51,10 @@ class ChoroplethMap {
   updateVis() {
     let vis = this;
 
+    vis.colorScale = d3.scaleSequential()
+      .domain([0, d3.max(stateCounts, d => d.count)])
+      .interpolator(d3.interpolateReds);
+
     vis.renderVis();
   }
 
@@ -79,18 +83,20 @@ class ChoroplethMap {
     const geoPath = vis.chart.selectAll('.geo-path')
     .data(states.features);
 
+    const stateCountMap = new Map(stateCounts.map(d => [d.state, d.count]));
     // ENTER: Create new elements when data is added
     geoPath.enter()
     .append('path')
     .attr('class', 'geo-path')
     .attr('d', vis.geoPath)
-    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' :statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' : statesToHighlight.includes(d.properties.name) ? '#473c9c' : vis.colorScale(stateCountMap.get(d.properties.name) || 0))
     .attr('stroke', '#fff')
     .attr('stroke-width', '0.2')
     .on('mouseover', function(event, d) {
       // highlight when hovering only if not already active
       if (!statesToHighlight.includes(d.properties.name) && selectedState !== d.properties.name) {
-        d3.select(this).attr('fill', '#b46dce');
+        // d3.select(this).attr('fill', '#b46dce');
+        d3.select(this).attr('fill', sunburst.colorScale(d.properties.name));
       }
 
       d3.select('#tooltip')
@@ -99,13 +105,13 @@ class ChoroplethMap {
         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
         .html(`
           <h5 style="margin: 0; padding: 0; line-height: 1; font-size: 14px; white-space: nowrap;">${d.properties.name}</h5>
-          <span>Number of books banned in this state: ${stateCounts.find(item => item.state === d.properties.name).count}</span>
+          <span>Number of books banned in this state: ${stateCounts.find(item => item.state === d.properties.name) ? stateCounts.find(item => item.state === d.properties.name).count : 0 }</span>
         `);
     })
     .on('mouseout', function(event, d) {
       d3.select('#tooltip').style('display', 'none');
       if (selectedState !== d.properties.name) {
-        d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF');
+        d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : vis.colorScale(stateCountMap.get(d.properties.name) || 0));
       }
     })
     .on('click', function(event, d) {
@@ -124,7 +130,7 @@ class ChoroplethMap {
     // UPDATE
     geoPath
     .attr('d', vis.geoPath)
-    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' : statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF')
+    .attr('fill', d => selectedState === d.properties.name ? '#CE6DBDFF' : statesToHighlight.includes(d.properties.name) ? '#473c9c' : vis.colorScale(stateCountMap.get(d.properties.name) || 0))
     .attr('stroke', '#fff')
     .attr('stroke-width', '0.2');
 

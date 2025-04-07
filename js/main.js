@@ -16,11 +16,8 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
     d => d.parent.parent.parent.data.name
   ).map(([state, count]) => ({ state, count }));
 
-  sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
-}); 
-
-// load map data
-d3.json('data/us-states.json')
+    // load map data
+  d3.json('data/us-states.json')
   .then(data => {
     stateData = data;
 
@@ -29,8 +26,11 @@ d3.json('data/us-states.json')
       parentElement: '#mercator',
       projection: d3.geoMercator()
     }, stateData);
+
+    sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
   })
-.catch(error => console.error(error));
+  .catch(error => console.error(error));
+}); 
 
 function filterByState() {
   if (selectedState !== "") {
@@ -49,6 +49,10 @@ function filterByState() {
 function selectArc(depth, parent) {
   if (selectedArc) {
     let newData = null;
+    if (parent.data.name === "United States") { 
+      selectedState = selectedArc.data.name;
+      choroplethMap.updateVis();
+    }
     switch (depth) {
       case 1:
         newData = sunburst.data.children.find(d => d.name === selectedArc.data.name);
@@ -71,12 +75,15 @@ function selectRoot() {
   if (selectedArc.parent) {
     sunburst.data = selectedArc.parent.data;
     selectedArc = selectedArc.parent;
-    sunburst.updateVis();
   } else {
     selectedArc = null;
     sunburst.data = dataBooks;
-    sunburst.updateVis();
   }
+  if (sunburst.data.name === "United States") {
+    selectedState = "";
+    choroplethMap.updateVis();
+  }
+  sunburst.updateVis();
 }
 
 /**
