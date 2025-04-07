@@ -3,7 +3,7 @@ let selectedState, selectedArc = "";
 let selectedBook = null;
 let statesToHighlight = []; // this variable stores states in which the selected book was banned
 let stateCounts = null; // this variable stores states with their respective number of banned books
-let sunburst, dataBooks;
+let sunburst, dataBooks, stateData, choroplethMap;
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
@@ -17,6 +17,19 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
 
   sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
 }); 
+
+// load map data
+d3.json('data/us-states.json')
+  .then(data => {
+    stateData = data;
+
+    // Mercator projection
+    choroplethMap = new ChoroplethMap({ 
+      parentElement: '#mercator',
+      projection: d3.geoMercator()
+    }, stateData);
+  })
+.catch(error => console.error(error));
 
 function filterByState() {
   if (selectedState !== "") {
@@ -67,23 +80,8 @@ function bookSelect() {
     }
     console.log(statesToHighlight);
   }
+  choroplethMap.updateVis();
 }
-
-
-/**
- * Load geo data
- */
-
-d3.json('data/us-states.json')
-  .then(data => {
-    // Mercator projection
-    const choroplethMap1 = new ChoroplethMap({ 
-      parentElement: '#mercator',
-      projection: d3.geoMercator()
-    }, data);
-  })
-  .catch(error => console.error(error));
-
 
 // dealing with the month picker, range from July 2021 to June 2024
 const selectMonth = document.getElementById("month");
