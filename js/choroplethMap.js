@@ -61,9 +61,6 @@ class ChoroplethMap {
     
     let vis = this;
 
-    console.log("rendering");
-    console.log(vis.activeStates);
-
     // Convert compressed TopoJSON to GeoJSON format
     const states = topojson.feature(vis.data, vis.data.objects.states);
 
@@ -91,7 +88,6 @@ class ChoroplethMap {
     .attr('stroke', '#fff')
     .attr('stroke-width', '0.2')
     .on('mouseover', function(event, d) {
-
       // highlight when hovering only if not already active
       if (!statesToHighlight.includes(d.properties.name) && selectedState !== d.properties.name) {
         d3.select(this).attr('fill', '#b46dce');
@@ -102,7 +98,8 @@ class ChoroplethMap {
         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
         .html(`
-          <div class="tooltip-title"> ${d.properties.name} </div>
+          <h5 style="margin: 0; padding: 0; line-height: 1; font-size: 14px; white-space: nowrap;">${d.properties.name}</h5>
+          <span>Number of books banned in this state: ${stateCounts.find(item => item.state === d.properties.name).count}</span>
         `);
     })
     .on('mouseout', function(event, d) {
@@ -114,12 +111,11 @@ class ChoroplethMap {
     .on('click', function(event, d) {
       // wipe statesToHighlight array
       statesToHighlight = [];
+      // if already selected, deselect
       if (selectedState === d.properties.name) {
         selectedState = "";
-        //d3.select(this).attr('fill', statesToHighlight.includes(d.properties.name) ? '#473c9c' : '#9467BDFF');
-      } else {
+      } else { // select state
         selectedState = d.properties.name;
-        //d3.select(this).attr('fill',  '#CE6DBDFF');
       }
       choroplethMap.updateVis();
       filterByState();
