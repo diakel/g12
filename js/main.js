@@ -6,6 +6,7 @@ let statesToHighlight = []; // this variable stores states in which the selected
 let stateCounts = null; // this variable stores states with their respective number of banned books
 let sunburst, dataBooks, stateData, choroplethMap;
 let filteredData;
+let breadcrumbs = []; // to keep track of where we are 
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
@@ -29,7 +30,7 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
       projection: d3.geoMercator()
     }, stateData);
 
-    sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks);
+    sunburst = new Sunburst({parentElement: '#vis-sunburst'}, dataBooks); 
     filterData();
   })
   .catch(error => console.error(error));
@@ -39,12 +40,14 @@ d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
  * Handles change in the data selector
  */
 function filterData() {
+  pathTooltipChange();
   filteredData = JSON.parse(JSON.stringify(dataBooks));
   
   if (date !== "" && date !== "Jul.21-Jun.24") {
     selectedState = "";
     selectedBook = null;
     statesToHighlight = [];
+    breadcrumbs = [];
     filteredData.children.forEach(district => {
       district.children.forEach(genre => {
         // Filter the books based on the date and update the genre's children
@@ -79,12 +82,17 @@ function filterData() {
  */
 function filterByState() {
   const stateData = filteredData.children.find(s => s.name === selectedState);
+  breadcrumbs = [];
   if (stateData) {
     sunburst.data = stateData;
+    breadcrumbs.push(d3.hierarchy(stateData));
   } else {
     sunburst.data = filteredData;
   }
   selectedArc = sunburst.root;
+  // breadcrumbs = [];
+  // breadcrumbs.push(selectedArc);
+  //selectedArc = sunburst.root.children.find(state => state.data.name === selectedState);
   sunburst.updateVis();
 }
 
@@ -106,14 +114,19 @@ function selectArc(depth, parent) {
         break;
       case 2:
         newData = parent.data.children.find(d => d.name === selectedArc.data.name);
+        breadcrumbs.push(parent);
         break;
       case 3:
+        breadcrumbs.push(parent.parent);
+        breadcrumbs.push(parent);
         // go to the outer layer, find the parent, then from the parent find the selected arc
         newData = parent.parent.data.children.find(d => d.name === parent.data.name).children.find(d => d.name === selectedArc.data.name);
     }
     sunburst.data = newData;
+    breadcrumbs.push(selectedArc);
   } else {
     sunburst.data = dataBooks;
+    breadcrumbs = [];
   }
   sunburst.updateVis();
 }
@@ -124,17 +137,21 @@ function selectArc(depth, parent) {
 function selectRoot() {
   if (selectedArc.parent) {
     sunburst.data = selectedArc.parent.data;
+    breadcrumbs = breadcrumbs.filter(d => d.data.name !== selectedArc.data.name);
     selectedArc = selectedArc.parent;
   } else {
     selectedArc = null;
+    breadcrumbs = [];
     sunburst.data = filteredData;
   }
   if (sunburst.data.name === "United States") {
     selectedState = "";
-    choroplethMap.updateVis();
   }
   selectedBook = null;
+  bookSelect();
   sunburst.updateVis();
+  // choroplethMap.updateVis();
+  pathTooltipChange();
 }
 
 /**
@@ -153,6 +170,28 @@ function bookSelect() {
     }
   }
   choroplethMap.updateVis();
+}
+
+/**
+ * Changes the tooltip above the sunburst that shows the current "path" of the user
+ */
+function pathTooltipChange() {
+  if (breadcrumbs.length == 0) {
+    d3.select("#tooltip-structure")
+      .style("display", "none");
+    return;
+  }
+  const pathHTML = breadcrumbs.map(b => `
+    <span class="breadcrumb">${b.data.name}</span>
+    `).join(`<icon class="breadcrumb-separator"></icon>`); 
+
+  d3.select("#tooltip-structure")
+      .html(`<div class="breadcrumb-container">${pathHTML}</div>`)
+      .style("border", "1px solid purple")
+      .style("padding-top", "7px")
+      .style("padding-left", "5px")
+      .style("padding-right", "5px")
+      .style("display", "block");
 }
 
 // Data selector
@@ -174,6 +213,7 @@ selectDate.addEventListener("change", () => {
   selectedState = "";
   selectedBook, selectedArc = null;
   statesToHighlight = [];
+  breadcrumbs = [];
   d3.select("#tooltip-sun").style("display", "none");
   filterData();
 });

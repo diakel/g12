@@ -148,6 +148,7 @@ class ChoroplethMap {
       }
       choroplethMap.updateVis();
       filterByState();
+      pathTooltipChange();
     }
 
     vis.renderLegend();

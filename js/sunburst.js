@@ -223,7 +223,9 @@ class Sunburst {
         if (d.children) {
           // Clicked not on the book (books don't have children):
           selectedArc = d;
+          // selectedArc = vis.originalRoot.descendants().find(arc => arc.data.name === d.data.name && arc.parent.name === d.parent.name);
           selectArc(selectedArc.depth, selectedArc.parent);
+          pathTooltipChange();
         } else {
           const isActive = selectedBook === d.data;
           if (isActive) selectedBook = null;
