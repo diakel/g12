@@ -7,6 +7,7 @@ let stateCounts = null; // this variable stores states with their respective num
 let sunburst, dataBooks, stateData, choroplethMap;
 let filteredData;
 let breadcrumbs = []; // to keep track of where we are 
+let sortBy = "count";
 
 d3.json('data/books_hierarchy_new.json').then((subjectsHierarchyData) => {
   dataBooks = subjectsHierarchyData;
@@ -187,12 +188,18 @@ function pathTooltipChange() {
 
   d3.select("#tooltip-structure")
       .html(`<div class="breadcrumb-container">${pathHTML}</div>`)
-      .style("border", "1px solid purple")
+      .style("border", "1px solid black")
       .style("padding-top", "7px")
       .style("padding-left", "5px")
       .style("padding-right", "5px")
       .style("display", "block");
 }
+
+// Sort selector
+d3.select(".sort").on("change", (e) => {
+  sortBy = e.target.value;
+  sunburst.updateVis();
+});
 
 // Data selector
 const selectedDateHeader = document.getElementById("selectedDate");

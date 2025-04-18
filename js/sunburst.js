@@ -8,9 +8,9 @@ class Sunburst {
     constructor(_config, _data) {
       this.config = {
         parentElement: _config.parentElement,
-        containerWidth: 850,
-        containerHeight: 850,
-        margin: {top: 5, right: 5, bottom: 10, left: 20}
+        containerWidth: 720,
+        containerHeight: 780,
+        margin: {top: 0, right: 0, bottom: 0, left: 0}
       }
       this.data = _data;
       this.initVis();
@@ -45,7 +45,7 @@ class Sunburst {
       // Append group element that will contain our actual chart 
       // and position it according to the config
       vis.chart = vis.svg.append('g')
-          .attr('transform', `translate(${vis.width / 2},${vis.height / 2})`);
+          .attr('transform', `translate(${vis.width / 2},${vis.height / 2 + 25})`);
 
       // The inner circle of the sunburst
       vis.rootCircle = vis.chart
@@ -65,10 +65,17 @@ class Sunburst {
       let vis = this;
 
       // Prepare the sunburst chart layout and data representation.
+      let sortFunction = null;
+      if (sortBy === "alphabet") {
+        sortFunction = (a, b) => a.data.name.toLowerCase().localeCompare(b.data.name.toLowerCase());
+      } else {
+        sortFunction = (a, b) => b.value - a.value;
+      }
+
       const partition = data => d3.partition().size([2 * Math.PI, vis.radius * vis.radius])
         (d3.hierarchy(data)
           .count()
-          .sort((a, b) => b.value - a.value));
+          .sort(sortFunction));
 
       vis.root = partition(vis.data);
 

@@ -8,8 +8,8 @@ class ChoroplethMap {
   constructor(config, data) {
     this.config = {
       parentElement: config.parentElement,
-      containerWidth: config.containerWidth || 850,
-      containerHeight: config.containerHeight || 550,
+      containerWidth: config.containerWidth || 650,
+      containerHeight: config.containerHeight || 500,
       margin: config.margin || {top: 0, right: 0, bottom: 0, left: 0},
       projection: config.projection || d3.geoAlbersUsa(),  // Use Albers USA projection
       tooltipPadding: 10
@@ -105,8 +105,8 @@ class ChoroplethMap {
     // UPDATE
     geoPath
     .attr('d', vis.geoPath)
-    .attr('stroke', '#fff')
-    .attr('stroke-width', '0.2')
+    .attr('stroke', 'lightgray')
+    .attr('stroke-width', '0.5')
     .on('mouseover', hoveredState)
     .on('mouseout', function(event, d) {
       d3.select('#tooltip').style('display', 'none');
@@ -160,12 +160,19 @@ class ChoroplethMap {
     vis.chart.selectAll(".legend").remove();
 
     const colorLegend = d3.legendColor()
-      .scale(vis.colorScale)
-      .title("Number of banned books");
+    .scale(vis.colorScale)
+    .shapeWidth(50)
+    .shapeHeight(10)
+    .cells(0)
+    .orient("horizontal")
+    .labelFormat(d3.format(".0f"))
+    .title("Number of bans");
 
     vis.chart.append("g")
       .attr("class", "legend")
-      .attr("transform", "translate(600,20)")
+      .attr("transform", "translate(370,30)")
       .call(colorLegend);
+      //.selectAll("text")
+      //.style("font-size", "10px");
   }
 }
