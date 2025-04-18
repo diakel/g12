@@ -174,7 +174,7 @@ function bookSelect() {
 }
 
 /**
- * Changes the tooltip above the sunburst that shows the current "path" of the user
+ * Changes the tooltip above the sunburst that shows the current "path" of the user (using global var).
  */
 function pathTooltipChange() {
   if (breadcrumbs.length == 0) {
