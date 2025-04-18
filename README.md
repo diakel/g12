@@ -11,3 +11,5 @@ https://github.com/topojson/topojson
 Sunburst:
 
 Programming assignment, D3 tutorials (especially on trees), https://observablehq.com/@d3/sunburst/2?collection=@d3/d3-hierarchy, https://observablehq.com/@kerryrodden/sequences-sunburst, chatGPT
+
+Done with Mandy Deng
